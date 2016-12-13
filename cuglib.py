@@ -7,9 +7,13 @@
 
 
 import requests
-import os
 import re
 import json
+try:
+    import Image
+except ImportError:
+    from PIL import Image
+import pytesseract
 from bs4 import BeautifulSoup
 
 # Struck Request headers
@@ -67,10 +71,8 @@ class LibUser(object):
         req = self.session.get(url)
         with open("captcha_test.gif", "wb") as gif:
             gif.write(req.content)
-        os.system("tesseract captcha_test.gif text")  # use tesseract in command line
-        with open("text.txt", "r") as t:
-            text = t.readline()
-        return text[0:4]
+        text = pytesseract.image_to_string(Image.open("captcha_test.gif"))
+        return text
 
     def login(self):
         params = {
@@ -189,7 +191,7 @@ def history(user):
 
 
 if __name__ == "__main__":
-    for i in range(20151001277, 20151001278):
+    for i in range(20151001278, 20151001278):
         try:
             x = LibUser(str(i), str(i) + 's')
         except LibLoginException as n:
