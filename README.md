@@ -6,6 +6,7 @@
 <h3>运行前的注意事项</h3>
 <p>libApi.py 与 cuglib.py 需要在同一文件夹内</p>
 <p>建议cd到文件夹内运行libApi.py</p>
+<p>需要事先在文件夹内创建log文件夹</p>
 <h3>关于api</h3>
 <p>对于所有方法，都只需要post两个参数:</p>
 <p>userid(一般是学号)</p>
