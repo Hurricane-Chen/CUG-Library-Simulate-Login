@@ -30,7 +30,6 @@ def get_stored_user(userid):
             user_list.pop(0)
         else:
             break
-    print(user_list)
     for i in user_list:
         if i.user.userid == userid:
             return i.user
@@ -136,4 +135,4 @@ def not_found(error):
 
 
 if __name__ == "__main__":
-    app.run('127.0.0.1', port=8000)
+    app.run('127.0.0.1', debug=True, port=8000)
