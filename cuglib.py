@@ -8,7 +8,6 @@
 
 import requests
 import re
-import json
 try:
     import Image
 except ImportError:
@@ -191,11 +190,4 @@ def history(user):
 
 
 if __name__ == "__main__":
-    for i in range(20151001278, 20151001278):
-        try:
-            x = LibUser(str(i), str(i) + 's')
-        except LibLoginException as n:
-            if n.response == "对不起，密码错误，请查实！":
-                print(n)
-            else:
-                print('ss')
+    pass

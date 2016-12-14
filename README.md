@@ -1,8 +1,7 @@
 # CUG-Library
 <p>测试运行环境：python3.5.1</p>
 <h3>依赖包与软件</h3>
-<p>除了python3的内置模块外，仅需要再安装Flask组件</p>
-<p>需要安装tesseract: $sudo apt-get install tesseract-ocr</p>
+<p>除了python3的内置模块外，仅需要再安装Flask组件(提供web服务)和pytesseract(进行验证码识别)</p>
 <h3>运行前的注意事项</h3>
 <p>libApi.py 与 cuglib.py 需要在同一文件夹内</p>
 <p>建议cd到文件夹内运行libApi.py</p>

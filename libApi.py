@@ -1,14 +1,14 @@
 # !/usr/bin/python3
 # coding=utf-8
-
-from flask import Flask
-from flask import jsonify
-from flask import request
-from cuglib import LibUser
 import cuglib
 import time
 import datetime
 import logging
+from flask import Flask
+from flask import jsonify
+from flask import request
+from cuglib import LibUser
+
 
 app = Flask(__name__)
 user_list = []
@@ -87,7 +87,7 @@ def get_books():
             user_list.append(UserAndTime(temp))
         except:
             logger.debug(userid + ' Unable to login when search books')
-            return jsonify(result=0, reason="无法登陆")
+            return jsonify(result=0, reason="无法登录")
     return jsonify(result=1, list=cuglib.now(temp))
 
 
@@ -104,7 +104,7 @@ def get_history():
             user_list.append(UserAndTime(temp))
         except:
             logger.debug(userid + ' Unable to login when search history')
-            return jsonify(result=0, reason="无法登陆")
+            return jsonify(result=0, reason="无法登录")
     return jsonify(result=1, list=cuglib.history(temp))
 
 
@@ -121,8 +121,8 @@ def rebook_all():
             user_list.append(UserAndTime(temp))
         except:
             logger.debug(userid + ' Unable to login when search history')
-            return jsonify(result=0, reason="无法登陆")
-    failure = temp.all_rebook()
+            return jsonify(result=0, reason="无法登录")
+    failure = temp.all_rebook()  # 返回借阅失败的书籍名称
     if len(failure) == 0:
         return jsonify(result=1)
     else:
