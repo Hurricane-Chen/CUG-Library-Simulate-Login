@@ -129,10 +129,5 @@ def rebook_all():
         return jsonify(result=0, failure=failure)
 
 
-@app.errorhandler(404)
-def not_found(error):
-    return make_response(jsonify(error='Not found'), 404)
-
-
 if __name__ == "__main__":
     app.run('127.0.0.1', debug=True, port=8000)
