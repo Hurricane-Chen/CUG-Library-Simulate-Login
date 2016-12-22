@@ -152,6 +152,16 @@ class LibUser(object):
         else:
             raise RebookException(judge.get_text())
 
+    def single_rebook(self, bar_code): # rebook only one book, verify it by its bar code
+        for book in self.now_books():
+            if book.bar_code == bar_code:
+                try:
+                    self.rebook(book)
+                    return True
+                except RebookException:
+                    return False
+        return False
+
     def all_rebook(self):
         # rebook all books
         failure = []
@@ -190,4 +200,8 @@ def history(user):
 
 
 if __name__ == "__main__":
-    pass
+    import time
+    x = time.time()
+    n = LibUser("20151002387", "20151002387")
+    print(history(n))
+    print("cost:", time.time() - x)
