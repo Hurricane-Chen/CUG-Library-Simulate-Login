@@ -111,7 +111,7 @@ def get_history():
 @app.route('/RebookAll', methods=['POST'])
 def rebook_all():
     # 续借所有书籍
-    logger = make_log('rebook_all')
+    logger = make_log('rebook')
     userid = request.form.get('userid', default='0')
     password = request.form.get('password', default=userid)
     temp = get_stored_user(userid)
@@ -128,6 +128,28 @@ def rebook_all():
     else:
         return jsonify(result=0, failure=failure)
 
+
+@app.route('/RebookSingle', methods=['POST'])
+def rebook_single():
+    logger = make_log('rebook')
+    userid = request.form.get('userid', default=0)
+    password = request.form.get('password')
+    bar_code = request.form.get('barcode')
+    temp = get_stored_user(userid)
+    if temp is None:
+        try:
+            temp = LibUser(userid, password)
+            user_list.append(UserAndTime(temp))
+        except:
+            logger.debug(userid + ' Unable to login when search history')
+            return jsonify(result=0, reason="无法登录")
+    try:
+        if temp.single_rebook(bar_code):
+            return jsonify(result=1)
+        else:
+            return jsonify(result=0)
+    except cuglib.RebookException as info:
+        return jsonify(result=0, reason=info.information)
 
 if __name__ == "__main__":
     app.run('127.0.0.1', debug=True, port=8000)
