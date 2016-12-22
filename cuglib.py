@@ -152,7 +152,8 @@ class LibUser(object):
         else:
             raise RebookException(judge.get_text())
 
-    def single_rebook(self, bar_code): # rebook only one book, verify it by its bar code
+    def single_rebook(self, bar_code):
+        # rebook only one book, verify it by its bar code
         for book in self.now_books():
             if book.bar_code == bar_code:
                 try:
@@ -160,7 +161,7 @@ class LibUser(object):
                     return True
                 except RebookException:
                     return False
-        return False
+        raise RebookException('没有条形码:%s对应书籍' % bar_code)
 
     def all_rebook(self):
         # rebook all books
