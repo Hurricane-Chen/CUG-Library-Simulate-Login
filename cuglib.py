@@ -134,6 +134,31 @@ class LibUser(object):
             index += 1
         return book_list
 
+    def arrears(self):
+        # return information about books user didn't return in time
+        url = 'http://202.114.202.207/reader/fine_pec.php'
+        info = self.session.get(url)
+        info.encoding = "utf-8"
+        soup = BeautifulSoup(info.text, "html.parser")
+        attribution = get_souplist_text(soup.find_all("td", {"bgcolor": "#FFFFFF", "class": "whitetext"}))
+        retur_list = []
+        i = 0
+        while i < len(attribution):
+            temp = {
+                '条码号': attribution[i],
+                '索书号': attribution[i + 1],
+                '书名': attribution[i + 2],
+                '责任者': attribution[i + 3],
+                '借阅日期': attribution[i + 4],
+                '应还日期': attribution[i + 5],
+                '应缴': attribution[i + 7],
+                '实缴': attribution[i + 8],
+                '状态': attribution[i + 9]
+            }
+            retur_list.append(temp)
+            i += 10
+        return retur_list
+
     def rebook(self, book):
         # rebook single book, only Book type argument acceptable
         url = 'http://202.114.202.207/reader/ajax_renew.php'
@@ -201,8 +226,5 @@ def history(user):
 
 
 if __name__ == "__main__":
-    import time
-    x = time.time()
-    n = LibUser("20151002387", "20151002387")
-    print(history(n))
-    print("cost:", time.time() - x)
+    n = LibUser('20151001970', '20151001970')
+    print(n.arrears())

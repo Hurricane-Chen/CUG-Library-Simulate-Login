@@ -57,7 +57,7 @@ def verify():
         message = userid + " Length of userid is not 11"
         logger.debug(message)
         return jsonify(result=0, reason="学号长度不正确")
-    try: # 测试能否成功 否则raise一个cuglib中的登录异常并获取信息
+    try:  # 测试能否成功 否则raise一个cuglib中的登录异常并获取信息
         temp = LibUser(userid, password)
         return jsonify(result=1)
     except cuglib.LibLoginException as info:
@@ -150,6 +150,25 @@ def rebook_single():
             return jsonify(result=0)
     except cuglib.RebookException as info:
         return jsonify(result=0, reason=info.information)
+
+
+@app.route('/GetArrears', methods=['POST'])
+def get_arrears():
+    logger = make_log('arrears')
+    userid = request.form.get('userid', default=0)
+    password = request.form.get('password')
+    bar_code = request.form.get('barcode')
+    temp = get_stored_user(userid)
+    if temp is None:
+        try:
+            temp = LibUser(userid, password)
+            user_list.append(UserAndTime(temp))
+        except:
+            logger.debug(userid + ' Unable to login when search history')
+            return jsonify(result=0, reason="无法登录")
+    info = temp.arrears()
+    return jsonify(result=1, info=info)
+
 
 if __name__ == "__main__":
     app.run('127.0.0.1', debug=True, port=8000)
