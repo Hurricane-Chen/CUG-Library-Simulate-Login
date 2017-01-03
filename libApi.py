@@ -23,7 +23,8 @@ class UserAndTime(object):
         self.add_time = time.time()
 
 
-def get_stored_user(userid):
+def get_stored_user(userid, password):
+    # 用于处理存储的用户
     now_time = time.time()
     while len(user_list) > 0:
         if now_time - user_list[0].add_time > 300:
@@ -31,7 +32,7 @@ def get_stored_user(userid):
         else:
             break
     for i in user_list:
-        if i.user.userid == userid:
+        if i.user.userid == userid and i.user.password == password:
             return i.user
     return None
 
@@ -61,17 +62,8 @@ def verify():
         temp = LibUser(userid, password)
         return jsonify(result=1)
     except cuglib.LibLoginException as info:
-        if info.response == "对不起，密码错误，请查实！":
-            message = userid + " Wrong password"
-            logger.info(message)
-            return jsonify(result=0, reason="密码错误")
-        else:
-            message = userid + "unknown error: " + info.response
-            logger.error(message)
-            return jsonify(result=0, reason="未知错误")
-    message = "Unknow error without information"
-    logger.error(message)
-    return jsonify(result=0, reason="未知错误")
+        logger.debug(info.response)
+        return jsonify(result=0, reason=info.response)
 
 
 @app.route('/GetNowBooks', methods=['POST'])
@@ -80,14 +72,14 @@ def get_books():
     logger = make_log('get_books')
     userid = request.form.get('userid', default='0')
     password = request.form.get('password', default=userid)
-    temp = get_stored_user(userid)
+    temp = get_stored_user(userid, password)
     if temp is None:
         try:
             temp = LibUser(userid, password)
             user_list.append(UserAndTime(temp))
-        except:
-            logger.debug(userid + ' Unable to login when search books')
-            return jsonify(result=0, reason="无法登录")
+        except cuglib.LibLoginException as info:
+            logger.debug(userid + info.response)
+            return jsonify(result=0, reason=info.response)
     return jsonify(result=1, list=cuglib.now(temp))
 
 
@@ -97,14 +89,14 @@ def get_history():
     logger = make_log('get_history')
     userid = request.form.get('userid', default='0')
     password = request.form.get('password', default=userid)
-    temp = get_stored_user(userid)
+    temp = get_stored_user(userid, password)
     if temp is None:
         try:
             temp = LibUser(userid, password)
             user_list.append(UserAndTime(temp))
-        except:
+        except cuglib.LibLoginException as reason:
             logger.debug(userid + ' Unable to login when search history')
-            return jsonify(result=0, reason="无法登录")
+            return jsonify(result=0, reason=reason.response)
     return jsonify(result=1, list=cuglib.history(temp))
 
 
@@ -114,14 +106,14 @@ def rebook_all():
     logger = make_log('rebook')
     userid = request.form.get('userid', default='0')
     password = request.form.get('password', default=userid)
-    temp = get_stored_user(userid)
+    temp = get_stored_user(userid, password)
     if temp is None:
         try:
             temp = LibUser(userid, password)
             user_list.append(UserAndTime(temp))
-        except:
+        except cuglib.LibLoginException as info:
             logger.debug(userid + ' Unable to login when search history')
-            return jsonify(result=0, reason="无法登录")
+            return jsonify(result=0, reason=info.response)
     failure = temp.all_rebook()  # 返回借阅失败的书籍名称
     if len(failure) == 0:
         return jsonify(result=1)
@@ -135,14 +127,14 @@ def rebook_single():
     userid = request.form.get('userid', default=0)
     password = request.form.get('password')
     bar_code = request.form.get('barcode')
-    temp = get_stored_user(userid)
+    temp = get_stored_user(userid, password)
     if temp is None:
         try:
             temp = LibUser(userid, password)
             user_list.append(UserAndTime(temp))
-        except:
+        except cuglib.LibLoginException as info:
             logger.debug(userid + ' Unable to login when search history')
-            return jsonify(result=0, reason="无法登录")
+            return jsonify(result=0, reason=info.response)
     try:
         if temp.single_rebook(bar_code):
             return jsonify(result=1)
@@ -157,15 +149,14 @@ def get_arrears():
     logger = make_log('arrears')
     userid = request.form.get('userid', default=0)
     password = request.form.get('password')
-    bar_code = request.form.get('barcode')
-    temp = get_stored_user(userid)
+    temp = get_stored_user(userid, password)
     if temp is None:
         try:
             temp = LibUser(userid, password)
             user_list.append(UserAndTime(temp))
-        except:
+        except cuglib.LibLoginException as info:
             logger.debug(userid + ' Unable to login when search history')
-            return jsonify(result=0, reason="无法登录")
+            return jsonify(result=0, reason=info.response)
     info = temp.arrears()
     return jsonify(result=1, info=info)
 
